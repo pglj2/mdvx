@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiResponse;
 
 
 
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
+import com.midiavox.mdvx.BusinessManager;
 import com.midiavox.mdvx.services.v1.User;
 
 @Path("/v1/users")
@@ -51,11 +53,17 @@ public class UsersResource {
 					.entity("{\"error\":\"Empty userId\", \"status\":\"FAIL\"}")
 					.build();
 		}
-		User user = new User();
-
-		user.setId("112233");
-		user.setName("Paul Lasalvia");
+		try {
+			User user = BusinessManager.getInstance().findUser(userId);
+			
+			return Response.status(Response.Status.OK).entity(user).build();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
-		return Response.status(Response.Status.OK).entity(user).build();
+		return Response.status(Response.Status.BAD_REQUEST)
+				.entity("{\"error\":\"Could Not Find User\", \"status\":\"FAIL\"}")
+				.build();
 	}
 }
