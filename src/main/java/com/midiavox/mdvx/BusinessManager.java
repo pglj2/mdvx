@@ -32,22 +32,24 @@ public class BusinessManager {
 	
 	public List<User> findUsers(){
 		
-		List<User> users = new ArrayList<User>();
+		return DataManager.getInstance().findAllUsers();
 		
-		User user1 = new User();
-		
-		user1.setId("112233");
-		user1.setName("Paulo Lasalvia");
-		
-		User user2 = new User();
-		
-		user2.setId("332211");
-		user2.setName("Pedro Lasalvia");
-		
-		users.add(user1);
-		users.add(user2);
-		
-		return users;
+//		List<User> users = new ArrayList<User>();
+//		
+//		User user1 = new User();
+//		
+//		user1.setId("112233");
+//		user1.setName("Paulo Lasalvia");
+//		
+//		User user2 = new User();
+//		
+//		user2.setId("332211");
+//		user2.setName("Pedro Lasalvia");
+//		
+//		users.add(user1);
+//		users.add(user2);
+//		
+//		return users;
 	}
 	
 	public User addUser(User user){
