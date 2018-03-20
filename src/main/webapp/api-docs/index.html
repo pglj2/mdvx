@@ -1,121 +1,376 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Swagger UI</title>
-  <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
-  <link href='css/typography.css' media='screen' rel='stylesheet' type='text/css'/>
-  <link href='css/reset.css' media='screen' rel='stylesheet' type='text/css'/>
-  <link href='css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
-  <link href='css/reset.css' media='print' rel='stylesheet' type='text/css'/>
-  <link href='css/print.css' media='print' rel='stylesheet' type='text/css'/>
-  <script src='lib/jquery-1.8.0.min.js' type='text/javascript'></script>
-  <script src='lib/jquery.slideto.min.js' type='text/javascript'></script>
-  <script src='lib/jquery.wiggle.min.js' type='text/javascript'></script>
-  <script src='lib/jquery.ba-bbq.min.js' type='text/javascript'></script>
-  <script src='lib/handlebars-2.0.0.js' type='text/javascript'></script>
-  <script src='lib/underscore-min.js' type='text/javascript'></script>
-  <script src='lib/backbone-min.js' type='text/javascript'></script>
-  <script src='swagger-ui.js' type='text/javascript'></script>
-  <script src='lib/highlight.7.3.pack.js' type='text/javascript'></script>
-  <script src='lib/marked.js' type='text/javascript'></script>
-  <script src='lib/swagger-oauth.js' type='text/javascript'></script>
-
-  <!-- Some basic translations -->
-  <!-- <script src='lang/translator.js' type='text/javascript'></script> -->
-  <!-- <script src='lang/ru.js' type='text/javascript'></script> -->
-  <!-- <script src='lang/en.js' type='text/javascript'></script> -->
-
-  <script type="text/javascript">
-    $(function () {
-      var url = window.location.search.match(/url=([^&]+)/);
-      if (url && url.length > 1) {
-        url = decodeURIComponent(url[1]);
-      } else {
-//          url = "http://petstore.swagger.io/v2/swagger.json";
-          url = "http://localhost:8080/mdvx/services/swagger.json";
-//          url = "https://www.control2me.com/japi/services/swagger.json";
-      }
-
-      // Pre load translate...
-      if(window.SwaggerTranslator) {
-        window.SwaggerTranslator.translate();
-      }
-      window.swaggerUi = new SwaggerUi({
-        url: url,
-        dom_id: "swagger-ui-container",
-        supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
-        onComplete: function(swaggerApi, swaggerUi){
-          if(typeof initOAuth == "function") {
-            initOAuth({
-              clientId: "your-client-id",
-              clientSecret: "your-client-secret-if-required",
-              realm: "your-realms",
-              appName: "your-app-name", 
-              scopeSeparator: ","
+  
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16">
+    <link href="css/typography.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="css/reset.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="css/screen.css" media="screen" rel="stylesheet" type="text/css">
+    <link href="css/reset.css" media="print" rel="stylesheet" type="text/css">
+    <link href="css/print.css" media="print" rel="stylesheet" type="text/css">
+    <script src="lib/jquery-1.8.0.min.js" type="text/javascript"></script>
+    <script src="lib/jquery.slideto.min.js" type="text/javascript"></script>
+    <script src="lib/jquery.wiggle.min.js" type="text/javascript"></script>
+    <script src="lib/jquery.ba-bbq.min.js" type="text/javascript"></script>
+    <script src="lib/handlebars-2.0.0.js" type="text/javascript"></script>
+    <script src="lib/underscore-min.js" type="text/javascript"></script>
+    <script src="lib/backbone-min.js" type="text/javascript"></script>
+    <script src="swagger-ui.js" type="text/javascript"></script>
+    <script src="lib/highlight.7.3.pack.js" type="text/javascript"></script>
+    <script src="lib/marked.js" type="text/javascript"></script>
+    <script src="lib/swagger-oauth.js" type="text/javascript"></script>
+  
+    <!-- Some basic translations -->
+    <!-- <script src='lang/translator.js' type='text/javascript'></script> -->
+    <!-- <script src='lang/ru.js' type='text/javascript'></script> -->
+    <!-- <script src='lang/en.js' type='text/javascript'></script> -->
+  
+    <script type="text/javascript">
+      $(function () {
+        var url = window.location.search.match(/url=([^&]+)/);
+        if (url && url.length > 1) {
+          url = decodeURIComponent(url[1]);
+        } else {
+            url = "http://localhost:8080/mdvx/services/swagger.json";
+        }
+  
+        // Pre load translate...
+        if(window.SwaggerTranslator) {
+          window.SwaggerTranslator.translate();
+        }
+        window.swaggerUi = new SwaggerUi({
+          url: url,
+          dom_id: "swagger-ui-container",
+          supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+          onComplete: function(swaggerApi, swaggerUi){
+            if(typeof initOAuth == "function") {
+              initOAuth({
+                clientId: "your-client-id",
+                clientSecret: "your-client-secret-if-required",
+                realm: "your-realms",
+                appName: "your-app-name", 
+                scopeSeparator: ","
+              });
+            }
+  
+            if(window.SwaggerTranslator) {
+              window.SwaggerTranslator.translate();
+            }
+  
+            $('pre code').each(function(i, e) {
+              hljs.highlightBlock(e)
             });
+  
+            addApiKeyAuthorization();
+          },
+          onFailure: function(data) {
+            log("Unable to Load SwaggerUI");
+          },
+          docExpansion: "none",
+          apisSorter: "alpha",
+          showRequestHeaders: false
+        });
+  
+        function addApiKeyAuthorization(){
+          var key = encodeURIComponent($('#input_apiKey')[0].value);
+          if(key && key.trim() != "") {
+              var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("api_key", key, "query");
+              window.swaggerUi.api.clientAuthorizations.add("api_key", apiKeyAuth);
+              log("added key " + key);
           }
-
-          if(window.SwaggerTranslator) {
-            window.SwaggerTranslator.translate();
+        }
+  
+        $('#input_apiKey').change(addApiKeyAuthorization);
+  
+        // if you have an apiKey you would like to pre-populate on the page for demonstration purposes...
+        /*
+          var apiKey = "myApiKeyXXXX123456789";
+          $('#input_apiKey').val(apiKey);
+        */
+  
+        window.swaggerUi.load();
+  
+        function log() {
+          if ('console' in window) {
+            console.log.apply(console, arguments);
           }
-
-          $('pre code').each(function(i, e) {
-            hljs.highlightBlock(e)
-          });
-
-          addApiKeyAuthorization();
-        },
-        onFailure: function(data) {
-          log("Unable to Load SwaggerUI");
-        },
-        docExpansion: "none",
-        apisSorter: "alpha",
-        showRequestHeaders: false
-      });
-
-      function addApiKeyAuthorization(){
-        var key = encodeURIComponent($('#input_apiKey')[0].value);
-        if(key && key.trim() != "") {
-            var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("api_key", key, "query");
-            window.swaggerUi.api.clientAuthorizations.add("api_key", apiKeyAuth);
-            log("added key " + key);
         }
-      }
-
-      $('#input_apiKey').change(addApiKeyAuthorization);
-
-      // if you have an apiKey you would like to pre-populate on the page for demonstration purposes...
-      /*
-        var apiKey = "myApiKeyXXXX123456789";
-        $('#input_apiKey').val(apiKey);
-      */
-
-      window.swaggerUi.load();
-
-      function log() {
-        if ('console' in window) {
-          console.log.apply(console, arguments);
-        }
-      }
-  });
-  </script>
-</head>
-
+    });
+    </script>
+  </head>
+  
 <body class="swagger-section">
-<div id='header'>
-  <div class="swagger-ui-wrap">
-    <a id="logo" href="http://swagger.io">swagger</a>
-    <form id='api_selector'>
-      <div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>
-      <div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
-      <div class='input'><a id="explore" href="#" data-sw-translate>Explore</a></div>
-    </form>
-  </div>
-</div>
+        <div id="header">
+          
+        </div>
+        
+        <div id="message-bar" class="swagger-ui-wrap message-success" data-sw-translate=""></div>
+        <div id="swagger-ui-container" class="swagger-ui-wrap"><div class="info" id="api_info">
+    <div class="info_title">MidiaVox</div>
+    <div class="info_description markdown"></div>
+    </div>
+  <div class="container" id="resources_container">
+    <ul id="resources"><li id="resource_users" class="resource active"><div class="heading">
+    <h2>
+      <a href="#!/users" class="toggleEndpointList" data-id="users">Operations</a> 
+    </h2>
+    
+    </div>
+    <ul class="endpoints" id="users_endpoint_list" style="display: block;">
 
-<div id="message-bar" class="swagger-ui-wrap" data-sw-translate>&nbsp;</div>
-<div id="swagger-ui-container" class="swagger-ui-wrap"></div>
+  <li class="endpoint">
+    <ul class="operations">
+      <li class="get operation" id="users_getUserById">
+        <div class="">
+          <h3>
+            <span class="http_method">
+            <a href="#!/users/getUserById" class="toggleOperation">Login</a>
+            </span>
+            <span class="path">
+            
+            </span>
+          </h3>
+          
+        </div>
+        <div class="content" id="users_getUserById_content" style="display: none;">
+          <h4>Implementation Notes</h4>
+          <div class="markdown"><p>This API retrieves the public information for the user(Private info is returned if this is the auth user)</p><p><u>Input Parameters</u></p><ul><li><b>userId and password</b> is required</li></ul><p></p>
+  </div>
+
+          
+          <form accept-charset="UTF-8" class="sandbox">
+            <div style="margin:0;padding:0;display:inline"></div>
+            <h4 data-sw-translate="">Parameters</h4>
+            <table class="fullwidth">
+            <thead>
+              <tr>
+              <th style="width: 100px; max-width: 100px" data-sw-translate="">Parameter</th>
+              <th style="width: 310px; max-width: 310px" data-sw-translate="">Value</th>
+              <th style="width: 200px; max-width: 200px" data-sw-translate="">Description</th>
+              <th style="width: 100px; max-width: 100px" data-sw-translate="">Parameter Type</th>
+              <th style="width: 220px; max-width: 230px" data-sw-translate="">Data Type</th>
+              </tr>
+            </thead>
+            <tbody class="operation-params">
+
+            <tr><td class="code required"><label for="muserId0.6887190936198619">userId</label></td>
+  <td>
+  <input class="parameter required" minlength="1" name="userId" placeholder="(required)" id="muserId0.6887190936198619" type="text" value="ola"></td>
+  <td>
+    <strong><span class="markdown"><p>userId</p>
+  </span></strong>
+  </td>
+  <td>path</td>
+  <td><span class="model-signature">string</span></td>
+  </tr><tr><td class="code required"><label for="mpassword0.2413158066736245">password</label></td>
+  <td>
+  <input class="parameter required" minlength="1" name="password" placeholder="(required)" id="mpassword0.2413158066736245" type="text" value="senha"></td>
+  <td>
+    <strong><span class="markdown"><p>password</p>
+  </span></strong>
+  </td>
+  <td>path</td>
+  <td><span class="model-signature">string</span></td>
+  </tr></tbody>
+            </table>
+            <div style="margin:0;padding:0;display:inline"></div>
+            <h4 data-sw-translate="">Response Messages</h4>
+            <table class="fullwidth">
+              <thead>
+              <tr>
+                <th data-sw-translate="">HTTP Status Code</th>
+                <th data-sw-translate="">Reason</th>
+                <th data-sw-translate="">Response Model</th>
+                <th data-sw-translate="">Headers</th>
+              </tr>
+              </thead>
+              <tbody class="operation-status">
+
+              <tr><td width="15%" class="code">200</td>
+  <td class="markdown"><p>Sucess:{ user profile }</p>
+  </td>
+  <td width="50%"><span class="model-signature"></span></td>
+  <td class="headers">
+    <table>
+      <tbody>
+      </tbody>
+    </table>
+  </td></tr><tr><td width="15%" class="code">400</td>
+  <td class="markdown"><p>Failed: {"error":"error_description", "status":"FAIL"}</p>
+  </td>
+  <td width="50%"><span class="model-signature"></span></td>
+  <td class="headers">
+    <table>
+      <tbody>
+      </tbody>
+    </table>
+  </td></tr></tbody>
+            </table>
+            <div class="sandbox_header">
+              <input class="submit" type="button" value="Try it out!" data-sw-translate="">
+              <a href="#" class="response_hider" style="" data-sw-translate="">Hide Response</a>
+              <span class="response_throbber" style="display: none;"></span>
+            </div>
+          </form>
+          <div class="response" style="">
+            <h4 class="curl">Curl</h4>
+            <div class="block curl"><pre>curl -X GET --header "Accept: application/json" "http://localhost:8080/mdvx/services/v1/users/ola/senha"</pre></div>
+            <h4 data-sw-translate="">Request URL</h4>
+            <div class="block request_url"><pre>http://localhost:8080/mdvx/services/v1/users/ola/senha</pre></div>
+            <h4 data-sw-translate="">Response Body</h4>
+            <div class="block response_body json"><pre class="json"><code>{
+    "<span class="attribute">id</span>": <span class="value"><span class="string">"teste"</span></span>,
+    "<span class="attribute">name</span>": <span class="value"><span class="string">"ola"</span></span>,
+    "<span class="attribute">password</span>": <span class="value"><span class="string">"senha"</span>
+  }</span></code></pre></div>
+            <h4 data-sw-translate="">Response Code</h4>
+            <div class="block response_code"><pre>200</pre></div>
+            <h4 data-sw-translate="">Response Headers</h4>
+            <div class="block response_headers"><pre>{<br>  "date": "Tue, 20 Mar 2018 17:44:11 GMT",<br>  "server": "Apache-Coyote/1.1",<br>  "content-length": "46",<br>  "content-type": "application/json"<br>}</pre></div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </li><li class="endpoint">
+    <ul class="operations">
+      <li class="post operation" id="users_createUser">
+        <div class="">
+          <h3>
+            <span class="http_method">
+            <a href="#!/users/createUser" class="toggleOperation">Register</a>
+            </span>
+            <span class="path">
+            
+            </span>
+          </h3>
+          
+        </div>
+        <div class="content" id="users_createUser_content" style="display: none;">
+          <h4>Implementation Notes</h4>
+          <div class="markdown"><p>This API create a new user if the username does not exist</p><p><u>Input Parameters</u></p><ul><li><b>new user object</b> is required</li></ul><p></p>
+  </div>
+
+          
+          <form accept-charset="UTF-8" class="sandbox">
+            <div style="margin:0;padding:0;display:inline"></div>
+            <h4 data-sw-translate="">Parameters</h4>
+            <table class="fullwidth">
+            <thead>
+              <tr>
+              <th style="width: 100px; max-width: 100px" data-sw-translate="">Parameter</th>
+              <th style="width: 310px; max-width: 310px" data-sw-translate="">Value</th>
+              <th style="width: 200px; max-width: 200px" data-sw-translate="">Description</th>
+              <th style="width: 100px; max-width: 100px" data-sw-translate="">Parameter Type</th>
+              <th style="width: 220px; max-width: 230px" data-sw-translate="">Data Type</th>
+              </tr>
+            </thead>
+            <tbody class="operation-params">
+
+            <tr><td class="code required"><label for="mbody0.5193160510515067">body</label></td>
+  <td>
+          <textarea class="body-textarea required" placeholder="(required)" name="body" id="mbody0.5193160510515067"></textarea>
+          <br>
+          <div class="parameter-content-type"><div><label for="pct0.06633775073740744">Parameter content type:</label>
+  <select name="parameterContentType" id="pct0.06633775073740744">
+    <option value="application/json">application/json</option>
+  </select>
+  </div></div>
+  </td>
+  <td>
+    <strong><span class="markdown"><p>New User</p>
+  </span></strong>
+  </td>
+  <td>body</td>
+  <td><span class="model-signature"><div><div>
+  <ul class="signature-nav">
+    <li><a class="description-link" href="#" data-sw-translate="">Model</a></li>
+    <li><a class="snippet-link selected" href="#" data-sw-translate="">Model Schema</a></li>
+  </ul>
+  <div>
+
+  <div class="signature-container">
+    <div class="description" style="display: none;">
+      <span class="strong">User {</span><div><span class="propName ">id</span> (<span class="propType">string</span>, <span class="propOptKey">optional</span>),</div><div><span class="propName ">name</span> (<span class="propType">string</span>, <span class="propOptKey">optional</span>),</div><div><span class="propName ">password</span> (<span class="propType">string</span>, <span class="propOptKey">optional</span>)</div><span class="strong">}</span>
+    </div>
+
+    <div class="snippet" style="display: block;">
+      <pre><code class="json">{
+    "<span class="attribute"><span class="attribute">id</span></span>": <span class="value"><span class="string"><span class="value"><span class="string">"string"</span></span></span></span>,
+    "<span class="attribute"><span class="attribute">name</span></span>": <span class="value"><span class="string"><span class="value"><span class="string">"string"</span></span></span></span>,
+    "<span class="attribute"><span class="attribute">password</span></span>": <span class="value"><span class="string"><span class="value"><span class="string">"string"</span></span></span><span class="value">
+  }</span></span></code></pre>
+      <small class="notice">Click to set as parameter value</small>
+    </div>
+  </div>
+
+  </div></div></div></span></td>
+  </tr></tbody>
+            </table>
+            <div style="margin:0;padding:0;display:inline"></div>
+            <h4 data-sw-translate="">Response Messages</h4>
+            <table class="fullwidth">
+              <thead>
+              <tr>
+                <th data-sw-translate="">HTTP Status Code</th>
+                <th data-sw-translate="">Reason</th>
+                <th data-sw-translate="">Response Model</th>
+                <th data-sw-translate="">Headers</th>
+              </tr>
+              </thead>
+              <tbody class="operation-status">
+
+              <tr><td width="15%" class="code">201</td>
+  <td class="markdown"><p>Sucess: { user profile }</p>
+  </td>
+  <td width="50%"><span class="model-signature"></span></td>
+  <td class="headers">
+    <table>
+      <tbody>
+      </tbody>
+    </table>
+  </td></tr><tr><td width="15%" class="code">400</td>
+  <td class="markdown"><p>Failed: {"error":"error description", "status":"FAIL"}</p>
+  </td>
+  <td width="50%"><span class="model-signature"></span></td>
+  <td class="headers">
+    <table>
+      <tbody>
+      </tbody>
+    </table>
+  </td></tr></tbody>
+            </table>
+            <div class="sandbox_header">
+              <input class="submit" type="button" value="Try it out!" data-sw-translate="">
+              <a href="#" class="response_hider" style="display:none" data-sw-translate="">Hide Response</a>
+              <span class="response_throbber" style="display:none"></span>
+            </div>
+          </form>
+          <div class="response" style="display:none">
+            <h4 class="curl">Curl</h4>
+            <div class="block curl"></div>
+            <h4 data-sw-translate="">Request URL</h4>
+            <div class="block request_url"></div>
+            <h4 data-sw-translate="">Response Body</h4>
+            <div class="block response_body"></div>
+            <h4 data-sw-translate="">Response Code</h4>
+            <div class="block response_code"></div>
+            <h4 data-sw-translate="">Response Headers</h4>
+            <div class="block response_headers"></div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </li></ul>
+  </li></ul>
+
+    
+  </div>
+  </div>
+        
+        
+        
 </body>
 </html>

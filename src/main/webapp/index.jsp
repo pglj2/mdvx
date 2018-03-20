@@ -1,5 +1,5 @@
 <html>
 <body>
-<h2>MidiaVox!</h2>
+<h2>Midiavox</h2>
 </body>
 </html>

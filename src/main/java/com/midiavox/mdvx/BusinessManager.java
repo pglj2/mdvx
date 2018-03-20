@@ -21,40 +21,23 @@ public class BusinessManager {
 	
 	public User findUser(String userId) {
 		log.info("BusinessManager::findUser started");
-		
-		User user = new User();
-		
-		user.setId("112233");
-		user.setName("Paul Lasalvia");
-		
-		return user;
+			
+		return DataManager.getInstance().findUserById(userId);
 	}
 	
+	//loginUser(password)
+	public User loginUser(String login, String password){
+		log.info("BusinessManager::loginUser started");
+		return DataManager.getInstance().findUserByPassword(login, password);
+	}
 	public List<User> findUsers(){
 		
 		return DataManager.getInstance().findAllUsers();
 		
-//		List<User> users = new ArrayList<User>();
-//		
-//		User user1 = new User();
-//		
-//		user1.setId("112233");
-//		user1.setName("Paulo Lasalvia");
-//		
-//		User user2 = new User();
-//		
-//		user2.setId("332211");
-//		user2.setName("Pedro Lasalvia");
-//		
-//		users.add(user1);
-//		users.add(user2);
-//		
-//		return users;
 	}
 	
 	public User addUser(User user){
-		
-		user.setId("123456");
+		DataManager.getInstance().insertUser(user);
 		return user;
 	}
 	
@@ -73,7 +56,7 @@ public class BusinessManager {
 	
 	public void deleteUser(String userId) {
 		
-		return;
+		DataManager.getInstance().deleteUser(userId);
 	}
 	
 }

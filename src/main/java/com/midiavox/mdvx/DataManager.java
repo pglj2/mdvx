@@ -1,6 +1,7 @@
 package com.midiavox.mdvx;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -23,53 +24,110 @@ public class DataManager {
 	private DataManager(){
 
 	}
-	public User insertUser(User user){
+	
+	public ResultSet connectionDB(int query, User user){
+		try{
+        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        System.out.println("Driver Loaded");
+        
+        String url2 = "jdbc:sqlserver://DESKTOP-4NMBH5O\\SQLEXPRESS:52497;databaseName=MidiaVoxAgentes;";
+        
+        Connection con = DriverManager.getConnection(url2, "pglj2", "gogo");
+        System.out.println("Connection OK");
+        Statement s1 = con.createStatement();
+        System.out.println("Statemente OK");
+        switch(query){
+        case 1: //findAllUsers and findUserById
+        	 return s1.executeQuery("SELECT * FROM AGENTE;");
+        case 2:
+        	break;
+        case 3: //insertUser
+        	return s1.executeQuery("INSERT INTO AGENTE VALUES ('"+user.getName()+"', '"+user.getId()+"', '"+user.getPassword()+"');");
+        case 4: //deleteUser
+        	s1.executeQuery("DELETE FROM AGENTE WHERE name='"+user.getName()+"' AND id='"+user.getId()+"';");
+        }
+        
+        
+		} catch(Exception e){
+			
+		}
+		return null;
 		
+	}
+	
+	public User insertUser(User user){
+		this.connectionDB(3, user);	
 		return user;
 		
 	}
 	
+	public void deleteUser(String userIdString){
+		User u = this.findUserById(userIdString);
+		this.connectionDB(4, u);
+	}
+	
 	public User findUserById(String userIdString){
-		if(userIdString == null)
-			return null;
-		
+		//User user = new User();
+		ResultSet rs = this.connectionDB(1, null);
+        if(rs!=null){
+        	try {
+				while(rs.next()){
+					if(rs.getString("id").equals(userIdString)){
+					User user = new User((rs.getString("name")), (rs.getString("id")),(rs.getString("password")) );
+					log.info("Username:"+user.getName()+" ID:"+user.getId());
+					return user;
+					}
+					//users.add(u);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+		return null;
+	}
+	
+	public User findUserByPassword(String login, String password){
+		log.info("DataManager::findUserByPassword started");
+		ResultSet rs = this.connectionDB(1, null);
+		if(rs!=null){
+			try{
+				while(rs.next()){
+					log.info("username= "+rs.getString("name")+ " password= "+rs.getString("password"));
+					log.info("login: "+login+" password: "+password);
+					if(rs.getString("name").equals(login) && rs.getString("password").equals(password)){
+						log.info("username== "+rs.getString("name")+ " password== "+rs.getString("password"));
+						User user = new User((rs.getString("name")), (rs.getString("id")),(rs.getString("password")) );
+						log.info("Username:"+user.getName()+" password:"+user.getPassword() + " LoggedIn");
+						return user;
+					}
+				}
+			} catch(SQLException e){
+				e.printStackTrace();
+			};
+			
+			
+		}
 		
 		return null;
 	}
 	
 	public List<User> findAllUsers(){
-		
-		try
-        {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-
-            String userName = "sa";
-            String password = "password";
-            String url = "jdbc:microsoft:sqlserver://localhost:1433"+";databaseName=MidiaVoxAgentes";
-            Connection con = DriverManager.getConnection(url, userName, password);
-            Statement s1 = con.createStatement();
-            ResultSet rs = s1.executeQuery("SELECT * FROM dbo.Agente;");
-            String[] result = new String[20];
+		List<User> users = new ArrayList<User>();
+			ResultSet rs = this.connectionDB(1, null);
             if(rs!=null){
-                while (rs.next()){
-                    for(int i = 0; i <result.length ;i++)
-                    {
-                        for(int j = 0; j <result.length;j++)
-                        {
-                            result[j]=rs.getString(i);
-                        System.out.println(result[j]);
-                    }
-                    }
-                }
+            	try {
+					while(rs.next()){
+						User u = new User((rs.getString("name")), (rs.getString("id")), (rs.getString("password")));
+						users.add(u);
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
+            return users;
 
-            //String result = new result[20];
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-		return null;
 		
 	}
 	
