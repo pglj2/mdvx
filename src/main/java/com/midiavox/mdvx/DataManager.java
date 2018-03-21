@@ -93,12 +93,9 @@ public class DataManager {
 		if(rs!=null){
 			try{
 				while(rs.next()){
-					log.info("username= "+rs.getString("name")+ " password= "+rs.getString("password"));
-					log.info("login: "+login+" password: "+password);
 					if(rs.getString("name").equals(login) && rs.getString("password").equals(password)){
-						log.info("username== "+rs.getString("name")+ " password== "+rs.getString("password"));
 						User user = new User((rs.getString("name")), (rs.getString("id")),(rs.getString("password")) );
-						log.info("Username:"+user.getName()+" password:"+user.getPassword() + " LoggedIn");
+						log.info("The user:"+user.getName()+/*" password:"+user.getPassword() +*/" LoggedIn");
 						return user;
 					}
 				}

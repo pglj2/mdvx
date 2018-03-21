@@ -34,7 +34,7 @@ public class UsersResource {
 	private static final Logger log = Logger.getLogger(UsersResource.class.getName());
 	
 	@GET
-	@Path("/{userId}/{password}")
+	@Path("/{name}/{password}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Find User",
 	notes = "This API retrieves the public information for the user(Private info is returned if this is the auth user)"+
@@ -44,26 +44,29 @@ public class UsersResource {
 			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error_description\", \"status\":\"FAIL\"}")
 	})
 	
-	public Response getUserById(@ApiParam(value = "userId", required = true, defaultValue = "ola", allowableValues = "", allowMultiple = false)
-	@PathParam("userId") String userId,
+	public Response getUserById(@ApiParam(value = "name", required = true, defaultValue = "ola", allowableValues = "", allowMultiple = false)
+	@PathParam("name") String name,
 	@ApiParam(value = "password", required = true, defaultValue = "senha", allowableValues = "", allowMultiple = false)
 	@PathParam("password") String password){
 		
-		log.info("UsersResource::getUserById started userId=" + userId);
-		log.info("UsersResource::getUserById started userId=" + password);
-		if (userId == null){
+		log.info("UsersResource::getUserById started name=" + name);
+		log.info("UsersResource::getUserById started password=" + password);
+		if (name == null){
 			return Response.status(Response.Status.BAD_REQUEST)
-					.entity("{\"error\":\"Empty userId\", \"status\":\"FAIL\"}")
+					.entity("{\"error\":\"Empty name\", \"status\":\"FAIL\"}")
 					.build();
 		}
 		try {
-			User user = BusinessManager.getInstance().loginUser(userId, password);
+			User user = BusinessManager.getInstance().loginUser(name, password);
+			if(user != null)
+				//return "OK";
 			return Response.status(Response.Status.OK).entity(user).build();
 			
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 		
+		//return "ERROR";
 		return Response.status(Response.Status.BAD_REQUEST)
 				.entity("{\"error\":\"Could Not Find User\", \"status\":\"FAIL\"}")
 				.build();
