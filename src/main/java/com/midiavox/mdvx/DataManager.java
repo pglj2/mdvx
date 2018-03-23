@@ -3,6 +3,7 @@ package com.midiavox.mdvx;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.log4j.Logger;
 
@@ -42,7 +43,12 @@ public class DataManager {
         case 2:
         	break;
         case 3: //insertUser
+        	int randomNum = ThreadLocalRandom.current().nextInt(10000, 99999 + 1);
+        	StringBuilder sb = new StringBuilder();
+        	sb.append(randomNum);
+        	user.setId(sb.toString());
         	return s1.executeQuery("INSERT INTO AGENTE VALUES ('"+user.getName()+"', '"+user.getId()+"', '"+user.getPassword()+"');");
+        	//} else return null;
         case 4: //deleteUser
         	s1.executeQuery("DELETE FROM AGENTE WHERE name='"+user.getName()+"' AND id='"+user.getId()+"';");
         }

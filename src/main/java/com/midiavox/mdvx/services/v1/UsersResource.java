@@ -102,7 +102,7 @@ public class UsersResource {
 	}
 	
 	@POST
-	@Path("/")
+	@Path("/{name}/{password}")
 	@Consumes({ MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
 	@ApiOperation(value = "Create a new User",
@@ -111,11 +111,14 @@ public class UsersResource {
 	@ApiResponses(value = { @ApiResponse(code = 201, message = "Sucess: { user profile }"),
 	@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")})
 
-	public Response createUser(@ApiParam(value = "New User", required = true, defaultValue = "\"{\"name\":\"Tom Jerry\"}\"", allowableValues = "", allowMultiple = false)
-	User user){
+	public Response createUser(@ApiParam(value = "name", required = true, defaultValue = "ola", allowableValues = "", allowMultiple = false)
+	@PathParam("name") String name,
+	@ApiParam(value = "password", required = true, defaultValue = "senha", allowableValues = "", allowMultiple = false)
+	@PathParam("password") String password){
 		
 		try {
-			User newUser = BusinessManager.getInstance().addUser(user);
+			log.info("name "+name+" pass "+password);
+			User newUser = BusinessManager.getInstance().addUser(new User(name,password));
 			return Response.status(Response.Status.CREATED).entity(newUser).build();
 		} catch(Exception e){
 			

@@ -11,9 +11,9 @@ public class User implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	public User(String name, String id){
+	public User(String name, String password){
 		this.name = name;
-		this.id = id;
+		this.password = password;
 	}
 	
 	public User(String name, String id, String password){
