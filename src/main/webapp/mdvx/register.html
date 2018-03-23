@@ -42,6 +42,7 @@
             function register() {
                 var name = document.getElementById("name");
                 var password = document.getElementById("password");
+                //var url = "http://192.168.0.64:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
                 var url = "http://localhost:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
                 var xhr = createCORSRequest('POST', url);
                 console.log(xhr);
@@ -107,6 +108,7 @@
             function register() {
                 var name = document.getElementById("name");
                 var password = document.getElementById("password");
+                //var url = "http://192.168.0.64:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
                 var url = "http://localhost:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
                 var xhr = createCORSRequest('POST', url);
                 console.log(xhr);

@@ -31,9 +31,11 @@ public class DataManager {
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         System.out.println("Driver Loaded");
         
-        String url2 = "jdbc:sqlserver://DESKTOP-4NMBH5O\\SQLEXPRESS:52497;databaseName=MidiaVoxAgentes;";
+        //String url2 = "jdbc:sqlserver://DESKTOP-4NMBH5O\\SQLEXPRESS:52497;databaseName=MidiaVoxAgentes;";
         
-        Connection con = DriverManager.getConnection(url2, "pglj2", "gogo");
+        //Connection con = DriverManager.getConnection(url2, "pglj2", "gogo");
+        String url2 = "jdbc:sqlserver://SIEBEL16;databaseName=mdvx";
+        Connection con = DriverManager.getConnection(url2, "midiavox", "aagt");
         System.out.println("Connection OK");
         Statement s1 = con.createStatement();
         System.out.println("Statemente OK");
