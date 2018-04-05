@@ -8,67 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <script language="javascript">
-            var xmlhttp;
-            function init() {
-               // put more code here in case you are concerned about browsers that do not provide XMLHttpRequest object directly
-               xmlhttp = new XMLHttpRequest();
-            }
-        
-            function createCORSRequest(method, url) {
-            var xhr = new XMLHttpRequest();
-            if ("withCredentials" in xhr) {
-        
-                // Check if the XMLHttpRequest object has a "withCredentials" property.
-                // "withCredentials" only exists on XMLHTTPRequest2 objects.
-                xhr.open(method, url, true);
-        
-            } else if (typeof XDomainRequest != "undefined") {
-        
-                // Otherwise, check if XDomainRequest.
-                // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-                xhr = new XDomainRequest();
-                xhr.open(method, url);
-        
-            } else {
-        
-                // Otherwise, CORS is not supported by the browser.
-                xhr = null;
-        
-            }
-            return xhr;
-            }
-        
-            function login() {
-                var name = document.getElementById("name");
-                var password = document.getElementById("password");
-                //var url = "http://192.168.0.64:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
-                var url = "http://localhost:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
-                var xhr = createCORSRequest('GET', url);
-                console.log(xhr);
-                //xmlhttp = createCORSRequest('GET', url);
-                if(!xhr){
-                    throw new Error('CORS not supported');
-                }
-                xhr.send(null);
-                xhr.onreadystatechange = function() {
-        
-                       var name =  document.getElementById("name");
-                       var password =  document.getElementById("password");
-                       console.log("Nome:"+name.value)
-                       console.log("Password:"+password.value);
-                       console.log("xmlhttp.responseText = "+ xhr.console);
-                       if (xhr.readyState == 4) {
-                           console.log(xhr.status)
-                          if ( xhr.status == 200) {
-                               var det = eval( "(" +  xhr.responseText + ")");
-                         }
-                         else
-                               alert("Error ->" + xhr.responseText);
-                      }
-                };
-            }
-    </script>
     <title>Mdvx</title>
     <!-- CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -104,14 +43,14 @@
             }
             return xhr;
             }
-        
             function login() {
+            	console.log("login2");
                 var name = document.getElementById("name");
                 var password = document.getElementById("password");
-                var url = "http://192.168.0.64:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
+                //var url = "http://192.168.0.64:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
+                var url = "http://localhost:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
                 var xhr = createCORSRequest('GET', url);
                 console.log(xhr);
-                //xmlhttp = createCORSRequest('GET', url);
                 if(!xhr){
                     throw new Error('CORS not supported');
                 }

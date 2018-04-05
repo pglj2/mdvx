@@ -20,7 +20,6 @@ public class SwaggerDocumentSetup extends HttpServlet{
 		//beanConfig.setDescription("");
 		beanConfig.setSchemes(new String[]{"http"});
 		beanConfig.setHost("localhost:8080");
-		//beanConfig.setHost("http://www.cin.ufpe.br/~pglj2");
 		beanConfig.setBasePath("/mdvx/services");
 		
 		beanConfig.setResourcePackage("com.midiavox.mdvx.services");

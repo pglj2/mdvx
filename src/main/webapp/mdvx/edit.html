@@ -50,7 +50,7 @@
                 var email = document.getElementById("email");
                 //var url = "http://192.168.0.64:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
                 var url = "http://localhost:8080/mdvx/services/v1/users/" + name.value + "/" + password.value+ "/"+ email.value;
-                var xhr = createCORSRequest('POST', url);
+                var xhr = createCORSRequest('PUT', url);
                 console.log(xhr);
                 //xmlhttp = createCORSRequest('GET', url);
                 if(!xhr){
@@ -67,7 +67,7 @@
                        console.log("Email:"+email.value);
                        if (xhr.readyState == 4) {
                         console.log("status?"+xhr.status);
-                          if ( xhr.status == 201) {
+                          if ( xhr.status == 200) {
                             
                             window.location.href = 'allUsers.html';
                          }
@@ -77,9 +77,22 @@
                 };
             }
     </script>
+    <script>
+    	function setValue(){
+    		console.log("name "+ localStorage.getItem("name"));
+    		console.log("password "+ localStorage.getItem("password"));
+    		console.log("email "+ localStorage.getItem("email"));
+    		document.getElementById("name").value = localStorage.getItem("name");
+    		var pass = "";
+    		for(var i =0; i < localStorage.getItem("password").length ; i++)
+    			pass += "*";	
+    		document.getElementById("password").value = localStorage.getItem("password");;
+    		document.getElementById("email").value = localStorage.getItem("email")
+    	}
+    </script>
 </head>
 
-<body>
+<body onload="setValue()">
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
@@ -95,7 +108,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="allUsers.html">List users</a>
+                        <a href="allUsers.html">List</a>
                     </li>
                     <li>
                         <a href="register.html">Register</a>
@@ -112,16 +125,16 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-8">
-                <h2>Register</h2>
+                <h2>Edit user</h2>
                 <table>     
                     <tr>
                         <td><div class="form-group">
                                 <label for="usr">Name:</label>
-                                <input type="text" id="name" class="form-control">
+                                <input type="text" id="name" class="form-control" disabled>
                               </div>
                               <div class="form-group">
                                 <label for="pwd">Password:</label>
-                                <input type="password" id="password" class="form-control" >
+                                <input type="password" id="password" class="form-control">
                               </div>
                               <div class="form-group">
                               	<label for="eml">Email:</label>
@@ -129,7 +142,7 @@
                               </div>
                         </td>
                     </tr>
-                    <td><button type="button" class="btn btn-primary" onclick="register()">Sign up</button></td>
+                    <td><button type="button" class="btn btn-primary" onclick="register()">Submit</button></td>
                 </table>
 
                 <p style="text-align: justify;"></p>

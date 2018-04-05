@@ -72,7 +72,6 @@ public class UsersResource {
 				.build();
 	}
 	
-	
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -101,8 +100,42 @@ public class UsersResource {
 		
 	}
 	
+	
+	@GET
+	@Path("/{name}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Find User by login or email",
+	notes = "This API retrieves the public information for the user(Private info is returned if this is the auth user)"+
+	"<p><u>Input Parameters</u><ul><li><b>name and email</b> is required</li></ul>")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Sucess:{ user profile }"),
+			@ApiResponse(code = 400, message = "Failed: {\"error\":\"error_description\", \"status\":\"FAIL\"}")
+	})
+	public Response getUserByLogin(@ApiParam(value = "name", required = true, defaultValue = "name", allowableValues = "", allowMultiple = false)
+	@PathParam("name") String name){	
+		log.info("UsersResource::getUserByLogin started name=" + name);
+		//log.info("UsersResource::getUserByLogin started email=" + email);
+		if (name == null){
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity("{\"error\":\"Empty name\", \"status\":\"FAIL\"}")
+					.build();
+		}
+		try {
+			User user = BusinessManager.getInstance().findUser(name);
+			if(user != null)
+				//return "OK";
+			return Response.status(Response.Status.OK).entity(user).build();		
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return Response.status(Response.Status.BAD_REQUEST)
+				.entity("{\"error\":\"Could Not Find User\", \"status\":\"FAIL\"}")
+				.build();
+	}
+	
+	
 	@POST
-	@Path("/{name}/{password}")
+	@Path("/{name}/{password}/{email}")
 	@Consumes({ MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
 	@ApiOperation(value = "Create a new User",
@@ -114,11 +147,13 @@ public class UsersResource {
 	public Response createUser(@ApiParam(value = "name", required = true, defaultValue = "ola", allowableValues = "", allowMultiple = false)
 	@PathParam("name") String name,
 	@ApiParam(value = "password", required = true, defaultValue = "senha", allowableValues = "", allowMultiple = false)
-	@PathParam("password") String password){
+	@PathParam("password") String password,
+	@ApiParam(value = "email", required = true, defaultValue = "email@email.com", allowableValues = "", allowMultiple = false)
+	@PathParam("email") String email){
 		
 		try {
-			log.info("name "+name+" pass "+password);
-			User newUser = BusinessManager.getInstance().addUser(new User(name,password));
+			log.info("name "+name+" pass "+password+" email "+email);
+			User newUser = BusinessManager.getInstance().addUser(new User(name,password,email));
 			return Response.status(Response.Status.CREATED).entity(newUser).build();
 		} catch(Exception e){
 			
@@ -129,7 +164,7 @@ public class UsersResource {
 	}
 	
 	@PUT
-	@Path("/{userId}")
+	@Path("{name}/{password}/{email}")
 	@Consumes({ MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
 	@ApiOperation(value = "Update User",
@@ -137,30 +172,29 @@ public class UsersResource {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Sucess: { user profile }"),
 	@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")})
 	
-	public Response updateUser(@PathParam("userId") String userId, String jsonString){
-		
-		String name;
-		
-		try{
-			Object obj = JSONValue.parse(jsonString);
-			JSONObject jsonObject = (JSONObject) obj;
-			name = (String) jsonObject.get("name");
-		} catch(Exception e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"Invalid or Missing fields error\", \"status\":\"FAIL\"}").build();
-		}
-		
-		try{
-			User updatedUser = BusinessManager.getInstance().updateUserAttribute(userId, "name", name);
+	public Response updateUser(@ApiParam(value = "name", required = true, defaultValue = "ola", allowableValues = "", allowMultiple = false)
+	@PathParam("name") String name,
+	@ApiParam(value = "password", required = true, defaultValue = "senha", allowableValues = "", allowMultiple = false)
+	@PathParam("password") String password,
+	@ApiParam(value = "email", required = true, defaultValue = "email@email.com", allowableValues = "", allowMultiple = false)
+	@PathParam("email") String email){
+
+			if(password.equals("") || email.equals(""))
+				return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"Invalid or Missing fields error\", \"status\":\"FAIL\"}").build();
+
+	//		User updatedUser = new User(name, password, email);
 			
+			
+			try{
+			User updatedUser = BusinessManager.getInstance().updateUserAttribute(name, password, email);
 			return Response.status(Response.Status.OK).entity(updatedUser).build();
-		} catch (Exception e){}
+			}catch(Exception e){}
 		
-		
-		return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"Could Not Update User\", \"status\":\"FAIL\"}").build();
+	return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"Could Not Update User\", \"status\":\"FAIL\"}").build();
 	}
 	
 	@DELETE
-	@Path("/{userId}")
+	@Path("/{name}")
 	@Consumes({ MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
 	@ApiOperation(value = "Delete User",
@@ -168,9 +202,9 @@ public class UsersResource {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Sucess: {  }"),
 	@ApiResponse(code = 400, message = "Failed: {\"error\":\"error description\", \"status\":\"FAIL\"}")})
 	
-	public Response deleteUser(@PathParam("userId") String userId){
+	public Response deleteUser(@PathParam("name") String name){
 		try{
-			BusinessManager.getInstance().deleteUser(userId);
+			BusinessManager.getInstance().deleteUser(name);
 			
 			return Response.status(Response.Status.OK).entity("{}").build();
 		} catch(Exception e){

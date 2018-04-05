@@ -29,32 +29,33 @@ public class DataManager {
 	public ResultSet connectionDB(int query, User user){
 		try{
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        ResultSet result = null;
         System.out.println("Driver Loaded");
         
-        //String url2 = "jdbc:sqlserver://DESKTOP-4NMBH5O\\SQLEXPRESS:52497;databaseName=MidiaVoxAgentes;";
+        String url2 = "jdbc:sqlserver://DESKTOP-4NMBH5O\\SQLEXPRESS:52497;databaseName=MidiaVoxAgentes;";
         
-        //Connection con = DriverManager.getConnection(url2, "pglj2", "gogo");
-        String url2 = "jdbc:sqlserver://SIEBEL16;databaseName=mdvx";
-        Connection con = DriverManager.getConnection(url2, "midiavox", "aagt");
+        Connection con = DriverManager.getConnection(url2, "pglj2", "gogo");
+        //String url2 = "jdbc:sqlserver://SIEBEL16;databaseName=mdvx";
+        //Connection con = DriverManager.getConnection(url2, "midiavox", "aagt");
         System.out.println("Connection OK");
         Statement s1 = con.createStatement();
         System.out.println("Statemente OK");
         switch(query){
         case 1: //findAllUsers and findUserById
-        	 return s1.executeQuery("SELECT * FROM AGENTE;");
+        	 result = s1.executeQuery("SELECT * FROM AGENTE;");
+        	 break;
         case 2:
+        	result = s1.executeQuery("UPDATE AGENTE SET Password= '"+user.getPassword()+"', Email= '"+user.getEmail()+"' WHERE Name = '"+user.getName()+"';");
         	break;
         case 3: //insertUser
-        	int randomNum = ThreadLocalRandom.current().nextInt(10000, 99999 + 1);
-        	StringBuilder sb = new StringBuilder();
-        	sb.append(randomNum);
-        	user.setId(sb.toString());
-        	return s1.executeQuery("INSERT INTO AGENTE VALUES ('"+user.getName()+"', '"+user.getId()+"', '"+user.getPassword()+"');");
-        	//} else return null;
+        	result = s1.executeQuery("INSERT INTO AGENTE VALUES ('"+user.getName()+"', '"+user.getPassword()+"', '"+user.getEmail()+"');");
+        	break;
         case 4: //deleteUser
-        	s1.executeQuery("DELETE FROM AGENTE WHERE name='"+user.getName()+"' AND id='"+user.getId()+"';");
+        	result = s1.executeQuery("DELETE FROM AGENTE WHERE Name='"+user.getName()+"';");
+        	break;
         }
         
+        return result;
         
 		} catch(Exception e){
 			
@@ -65,12 +66,19 @@ public class DataManager {
 	
 	public User insertUser(User user){
 		this.connectionDB(3, user);	
+		log.info("un "+ user.getName());
 		return user;
 		
 	}
 	
+	public User updateUser(User user){
+		this.connectionDB(2, user);
+		return user;
+	}
+	
 	public void deleteUser(String userIdString){
-		User u = this.findUserById(userIdString);
+		//User u = this.findUserById(userIdString);
+		User u = new User(userIdString, null, null); 
 		this.connectionDB(4, u);
 	}
 	
@@ -80,9 +88,9 @@ public class DataManager {
         if(rs!=null){
         	try {
 				while(rs.next()){
-					if(rs.getString("id").equals(userIdString)){
-					User user = new User((rs.getString("name")), (rs.getString("id")),(rs.getString("password")) );
-					log.info("Username:"+user.getName()+" ID:"+user.getId());
+					if(rs.getString("name").equals(userIdString)){
+					User user = new User((rs.getString("name")), (rs.getString("password")),(rs.getString("email")) );
+					log.info("Username:"+user.getName()+" email:"+user.getEmail());
 					return user;
 					}
 					//users.add(u);
@@ -102,8 +110,30 @@ public class DataManager {
 			try{
 				while(rs.next()){
 					if(rs.getString("name").equals(login) && rs.getString("password").equals(password)){
-						User user = new User((rs.getString("name")), (rs.getString("id")),(rs.getString("password")) );
+						User user = new User((rs.getString("name")),(rs.getString("password")),(rs.getString("email")));
 						log.info("The user:"+user.getName()+/*" password:"+user.getPassword() +*/" LoggedIn");
+						return user;
+					}
+				}
+			} catch(SQLException e){
+				e.printStackTrace();
+			};
+			
+			
+		}
+		
+		return null;
+	}
+	//or Email
+	public User findUserByLoginOrEmail(String login, String email){
+		log.info("DataManager::findUserByPassword started");
+		ResultSet rs = this.connectionDB(1, null);
+		if(rs!=null){
+			try{
+				while(rs.next()){
+					if(rs.getString("name").equals(login) || rs.getString("password").equals(email)){
+						User user = new User((rs.getString("name")),(rs.getString("password")),(rs.getString("email")));
+						log.info("The user:"+user.getName()+" email:"+user.getEmail() +" LoggedIn");
 						return user;
 					}
 				}
@@ -123,7 +153,8 @@ public class DataManager {
             if(rs!=null){
             	try {
 					while(rs.next()){
-						User u = new User((rs.getString("name")), (rs.getString("id")), (rs.getString("password")));
+						
+						User u = new User((rs.getString("name")),(rs.getString("password")) , (rs.getString("email")));
 						users.add(u);
 					}
 				} catch (SQLException e) {

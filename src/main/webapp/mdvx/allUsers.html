@@ -2,7 +2,44 @@
 <html lang="en">
 
 <head>
+<style>
+    div#top{
+		display: table;
+		margin: auto;
+		margin-top: 1px;
+		table-layout: fixed;
+		background: #009688;
+		width: 100%
+}
 
+    div#top:nth-child(odd) {
+    background: #EEEEEE;
+	color: #000;
+	font-size: 20px;
+}
+    div#top:nth-child(even){
+	background-color: #fff;
+	color: #000;
+	font-size: 20px;
+
+}
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+</style>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -43,16 +80,15 @@
             }
             return xhr;
             }
-        
-            function register() {
+            function getUsers() {
+                var data;
                 var name = document.getElementById("name");
                 var password = document.getElementById("password");
                 var email = document.getElementById("email");
                 //var url = "http://192.168.0.64:8080/mdvx/services/v1/users/" + name.value + "/" + password.value;
-                var url = "http://localhost:8080/mdvx/services/v1/users/" + name.value + "/" + password.value+ "/"+ email.value;
-                var xhr = createCORSRequest('POST', url);
+                var url = "http://localhost:8080/mdvx/services/v1/users/";
+                var xhr = createCORSRequest('GET', url);
                 console.log(xhr);
-                //xmlhttp = createCORSRequest('GET', url);
                 if(!xhr){
                     throw new Error('CORS not supported');
                 }
@@ -62,24 +98,35 @@
                        var name =  document.getElementById("name");
                        var password =  document.getElementById("password");
                        var email = document.getElementById("email");
-                       console.log("Nome:"+name.value)
-                       console.log("Password:"+password.value);
-                       console.log("Email:"+email.value);
                        if (xhr.readyState == 4) {
                         console.log("status?"+xhr.status);
-                          if ( xhr.status == 201) {
+                          if ( xhr.status == 200) {
                             
-                            window.location.href = 'allUsers.html';
+                            console.log("xhr "+xhr.responseText);
+                            var k = JSON.parse(xhr.responseText);
+                            var outname = "";
+                            var outid = "";//email
+                            var outall = "<table><tr><th>Username</th><th>Email</th></tr>";
+                            for(var i = 0; i < k.users.length; i++){
+                                outall += "<tr><td>"+k.users[i].name+"</td><td>"+k.users[i].email+"</td></tr>";
+                            }
+                            outall += "</table>";
+                            document.getElementById("nome").innerHTML = outall;
+                            //document.getElementById("key").innerHTML = outid;
+                            
+                            //window.location.href = 'index.html';
                          }
                          else
                                alert("Error ->" + xhr.responseText);
                       }
                 };
             }
+
+            
     </script>
 </head>
 
-<body>
+<body onload="getUsers()">
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
@@ -95,7 +142,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="allUsers.html">List users</a>
+                        <a href="allUsers.html">List</a>
                     </li>
                     <li>
                         <a href="register.html">Register</a>
@@ -112,27 +159,14 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-8">
-                <h2>Register</h2>
-                <table>     
-                    <tr>
-                        <td><div class="form-group">
-                                <label for="usr">Name:</label>
-                                <input type="text" id="name" class="form-control">
-                              </div>
-                              <div class="form-group">
-                                <label for="pwd">Password:</label>
-                                <input type="password" id="password" class="form-control" >
-                              </div>
-                              <div class="form-group">
-                              	<label for="eml">Email:</label>
-                              	<input type="email" id="email" class="form-control">
-                              </div>
-                        </td>
-                    </tr>
-                    <td><button type="button" class="btn btn-primary" onclick="register()">Sign up</button></td>
+            	<h3></h3>
+                <h2>Users</h2>
+                
+                <div id=key></div>
+                <table>
+                    <div id=nome></div>
+                    
                 </table>
-
-                <p style="text-align: justify;"></p>
             </div>
         </div>
 		</div>

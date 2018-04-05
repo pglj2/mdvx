@@ -30,6 +30,11 @@ public class BusinessManager {
 		log.info("BusinessManager::loginUser started");
 		return DataManager.getInstance().findUserByPassword(login, password);
 	}
+	
+	public User findUser(String login, String email){
+		log.info("BusinessManager::findUser started");
+		return DataManager.getInstance().findUserByLoginOrEmail(login, email);
+	}
 	public List<User> findUsers(){
 		
 		return DataManager.getInstance().findAllUsers();
@@ -42,21 +47,16 @@ public class BusinessManager {
 	}
 	
 	
-	public User updateUserAttribute(String userId, String attribute, String value){
-		
-		User user = new User();
-		
-		user.setId(userId);
-		
-		if(attribute.equals("name"))
-			user.setName(value);
-		
+	public User updateUserAttribute(String name, String password, String email){
+		User user = new User(name, password, email);
+		DataManager.getInstance().updateUser(user);
+				
 		return user;
 	}
 	
-	public void deleteUser(String userId) {
+	public void deleteUser(String name) {
 		
-		DataManager.getInstance().deleteUser(userId);
+		DataManager.getInstance().deleteUser(name);
 	}
 	
 }
